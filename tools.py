@@ -51,6 +51,7 @@ def _size_matches(wanted: str, listing_size: str) -> bool:
         return True
     return bool(_size_tokens(wanted) & listing_tokens)
 
+
 def search_listings(
     description: str,
     size: str | None = None,
@@ -102,8 +103,19 @@ def search_listings(
     Test it from a terminal before you move on:
         python -c "from tools import search_listings; print(search_listings('graphic tee', max_price=30))"
     """
-    # TODO: replace this with your implementation
-    return []
+    # DONE: replace this with your implementation
+    scored = []
+    description_tokens = _keywords(description)
+    for listing in load_listings():
+        if (_size_matches(size, listing["size"]) and listing["price"] <= max_price):
+            listing_desc_tokens = _keywords(listing["description"])
+            score = len(set(listing_desc_tokens) & set(description_tokens))
+            scored.append((score, listing))
+
+    scored.sort(key=lambda pair: pair[0], reverse=True)
+    res = [listing for _, listing in scored]
+
+    return res
 
 
 # ── Tool 2: suggest_outfit ────────────────────────────────────────────────────

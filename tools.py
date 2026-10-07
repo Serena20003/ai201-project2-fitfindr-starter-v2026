@@ -148,7 +148,7 @@ def suggest_outfit(new_item: dict, wardrobe: dict) -> str:
     Test it from a terminal before you move on:
         python -c "from tools import suggest_outfit; from utils.data_loader import get_example_wardrobe, load_listings; print(suggest_outfit(load_listings()[0], get_example_wardrobe()))"
     """
-    # TODO: replace this with your implementation
+    # DONE: replace this with your implementation
     '''
     "id": ${new_item["id"]},
         "title": ${new_item["title"]},
@@ -185,7 +185,7 @@ def suggest_outfit(new_item: dict, wardrobe: dict) -> str:
             "colors": ${wardrobe_item["colors"]},
             "style_tags": ${wardrobe_item["style_tags"]},
             "notes": ${wardrobe_item["notes"]}
-            ''' for wardrobe_item in wardrobe.items]
+            ''' for wardrobe_item in wardrobe["items"]]
         
         wardrobe_prompt = f'''You are an expert fashion designer. 
         Use 4-6 sentences to give an outfit suggestion based on the new item I am considering buying. 

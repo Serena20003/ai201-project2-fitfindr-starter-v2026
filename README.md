@@ -59,24 +59,32 @@
 
 ### `search_listings`
 
-- **What it does:**
+- **What it does:** it returns a list of matching listings by matching the fetched listing data and the parsed description and optionally size and price ceiling.
 - **Inputs:** <!-- name and type each: `max_price` (float), not "a price" -->
-- **Returns:**
-- **When it has nothing:**
+`description` : string
+`size` : string (optional)
+`max_price` : float (optional)
+- **Returns:** a list of matching listing dictionaries in order of best match. The dictionary should have all the following fields: 
+id, title, description, category, style_tags (list), size, condition, price (float), colors (list), brand (str or None), platform
+- **When it has nothing:** Returns an empty list but cannot be none or raising an exception.
 
 ### `suggest_outfit`
 
-- **What it does:**
+- **What it does:** it returns a string describing one or two outfits based on the thrifted item and the user's wardrobe.
 - **Inputs:**
-- **Returns:**
-- **When it has nothing:**
+`new_item` : dictionary of the new listing item
+`wardrobe` : dictionary of user's wardrobe - could be empty
+- **Returns:** non-empty string with outfit suggestions
+- **When it has nothing:** should never be empty - there is something wrong with the tool if nothing gets returned. If the wardrobe is empty, return a string of default general styling advice.
 
 ### `create_fit_card`
 
-- **What it does:**
+- **What it does:** returns a short caption based on the user's outfit string and the new item they want to purchase/already purchased.
 - **Inputs:**
-- **Returns:**
-- **When it has nothing:**
+`outfit` : string of outfit suggestion from `suggest_outfit()` tool
+`new_item` : dictionary of the new listing item
+- **Returns:** string of 2-to-4 sentence resembling a caption.
+- **When it has nothing:** should never be empty - there is something wrong with the tool if nothing gets returned. If the `outfit` is empty or whitespace (which should also never happen in the first place), should return a descriptive error message rather than raising an exception.
 
 ---
 
@@ -93,7 +101,7 @@
      The grader checks your code against what you claim here, so the file and
      function have to be real. -->
 
-**Branch rule:**
+**Branch rule:** If `search_listings` returns an empty list, put a message in the session and stop. Otherwise, take the first result and go to `suggest_outfit`.
 
 **Where it lives:** `agent.py::run_agent`
 

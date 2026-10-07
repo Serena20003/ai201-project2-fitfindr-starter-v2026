@@ -21,13 +21,10 @@ data earns credit; *"80% seemed reasonable"* does not.
 
 ## 1. A matching query completes all three tools
 
-Given a query that matches at least one listing, the agent completes all three
-tool calls and returns a fit card — in at least 4 of 5 tries.
+Given a query that matches at least one listing, the agent completes all three tool calls and returns a fit card — in at least 4 of 5 tries.
 
 **Why this target:**
-<!-- Why 4 of 5 and not 5 of 5? Something about your search, probably —
-     "my search is a plain keyword match and some phrasings will miss" is a
-     real answer. -->
+My search is a plain keyword match and I expect some phrasings will be missed.
 
 ---
 
@@ -39,10 +36,11 @@ Given a query that matches no listings, the agent stops before calling
 **Why this target:**
 <!-- Why is 5 of 5 reasonable here when criterion 1 isn't? What's different
      about this path? -->
+Gating against no-match queries is very important to preserve tokens for the RAG system, and also better for spotting queries we think are valid if we know the system returned early with no-match.
 
 ---
 
-## 3. Something about state
+## 3. Valid results are passing into suggest outfit correctly.
 
 <!-- YOU WRITE THIS ONE.
 
@@ -54,15 +52,15 @@ Given a query that matches no listings, the agent stops before calling
      compares session["selected_item"] against what actually reached
      suggest_outfit is the shape you're after. -->
 
-
+session["selected_item"] should match the "new_item" input for suggest_outfit exactly for 5 out of 5 tests.
 
 **Why this target:**
-
+The state should not be compromised, so it needs to ensure a 100% pass for all the tests. Because if the state is compromized in the intermediate steps, then the output will not have the input with integrity, making it hard to isolate areas to finetune in the later stages.
 
 
 ---
 
-## 4. Something about the fit card
+## 4. The fit card is presenting sufficient information.
 
 <!-- YOU WRITE THIS ONE.
 
@@ -74,16 +72,16 @@ Given a query that matches no listings, the agent stops before calling
      mentions the price? Two different items producing the same opening
      sentence? A card longer than a caption anyone would post? Any of those can
      be turned into a number. -->
-
+With a valid query, the fit card should produce a 2-4 sentence caption that contains the price of the new item in 5 out of 5 tests.
 
 
 **Why this target:**
-
+5 out of 5 because the price should be a consistent component in the fit card, and if it is included in the prompt, should be appearing consistently.
 
 
 ---
 
-## 5. Your choice
+## 5. The fit card reflects outfit suggestions
 
 <!-- YOU WRITE THIS ONE TOO.
 
@@ -91,11 +89,11 @@ Given a query that matches no listings, the agent stops before calling
      wardrobe path, what happens when the model can't be reached, whether the
      search respects a price ceiling — anything, as long as it names a number
      or an observable outcome. -->
-
+The fit card contains at least 1 adjective from the output string from suggest_outfit in 4 out of 5 tests.
 
 
 **Why this target:**
-
+I want the fit card to generate its texts from the outfit suggestions instead of regenerating completely without referencing the outfit suggestions texts so the caption is grounded. I want this to be in 4 out of 5 tests because some outfit suggestions might not be useful, but that case is not a criteria.
 
 
 ---

@@ -115,7 +115,7 @@ def search_listings(
     scored.sort(key=lambda pair: pair[0], reverse=True)
     res = [listing for _, listing in scored]
 
-    return res
+    return res[:config.SEARCH_RESULT_LIMIT]
 
 
 # ── Tool 2: suggest_outfit ────────────────────────────────────────────────────
@@ -149,7 +149,54 @@ def suggest_outfit(new_item: dict, wardrobe: dict) -> str:
         python -c "from tools import suggest_outfit; from utils.data_loader import get_example_wardrobe, load_listings; print(suggest_outfit(load_listings()[0], get_example_wardrobe()))"
     """
     # TODO: replace this with your implementation
-    return ""
+    '''
+    "id": ${new_item["id"]},
+        "title": ${new_item["title"]},
+        "description": ${new_item["description"]},
+        "category": ${new_item["category"]},
+        "style_tags": ${new_item["style_tags"]},
+        "size": ${new_item["size"]},
+        "condition": ${new_item["condition"]},
+        "price": ${new_item["price"]},
+        "colors": ${new_item["colors"]},
+        "brand": ${new_item["brand"]},
+        "platform": ${new_item["platform"]}
+        '''
+    resp = ""
+    new_item_JSON = f'''
+    "title": ${new_item["title"]},
+    "description": ${new_item["description"]},
+    "category": ${new_item["category"]},
+    "style_tags": ${new_item["style_tags"]},
+    "colors": ${new_item["colors"]},
+    "brand": ${new_item["brand"]}'''
+
+    if len(wardrobe['items']) == 0:
+        generic_prompt = f'''You are an expert fashion designer. 
+            Use 4-6 sentences to give an outfit suggestion based on the new item I am considering buying. 
+            Provide suggestions for tops, bottoms, shoes, and accessories that will go well with this fashion item. 
+            Use the JSON attributes of the clothing below:
+            ${new_item_JSON}'''
+        resp = generate(generic_prompt)
+    else:
+        wardrobe_JSON = [f'''
+            "name": ${wardrobe_item["name"]},
+            "category": ${wardrobe_item["category"]},
+            "colors": ${wardrobe_item["colors"]},
+            "style_tags": ${wardrobe_item["style_tags"]},
+            "notes": ${wardrobe_item["notes"]}
+            ''' for wardrobe_item in wardrobe.items]
+        
+        wardrobe_prompt = f'''You are an expert fashion designer. 
+        Use 4-6 sentences to give an outfit suggestion based on the new item I am considering buying. 
+        Provide suggestions of clothings only from my wardrobe that will go well with this fashion item. 
+        Use the JSON attributes of the new fashion item below:
+        ${new_item_JSON}
+        Use the JSON attributes of the wardrobe below (build the outfit from these items only to match the new fashion item)
+        ${wardrobe_JSON}
+        '''
+        resp = generate(wardrobe_prompt)
+    return resp
 
 
 # ── Tool 3: create_fit_card ───────────────────────────────────────────────────
